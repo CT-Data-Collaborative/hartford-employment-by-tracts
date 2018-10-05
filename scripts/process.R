@@ -47,7 +47,7 @@ ToMR.Employed <- ExtractNumData(data$Two.or.More.Races.16.Years.Old.in.Civilian.
 total.Employed <- White.Employed + BoAA.Employed + AIAN.Employed + Asian.Employed + NHawaiian.Employed + SomeR.Employed + ToMR.Employed
 total.Employed.df <- data.frame(fips, total.Employed)
 colnames(total.Employed.df) <- c("Id", "y_2011-2015")
-WriteDFToTable(total.LF.df, "employed-labour-force.csv")
+WriteDFToTable(total.Employed.df, "employed-labour-force.csv")
 
 
 # CSV to allow double checking work
