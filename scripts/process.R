@@ -1,11 +1,9 @@
-# read csv data from acquired data source
-
 ToNumeric <- function (factor) {
- return(as.numeric(as.character(factor)))
+  return(as.numeric(as.character(factor)))
 }
 
 ExtractNumData <- function (factor) {
- return(ToNumeric(factor[2:length(factor)]))
+  return(ToNumeric(factor[2:length(factor)]))
 }
 
 WriteDFToTable <- function(df, filename){
@@ -18,45 +16,58 @@ WriteDFToTable <- function(df, filename){
 }
 
 data <- read.csv(
-              list.files("raw", pattern = "*.csv", full.names = TRUE)[1]
-            )
+  list.files("raw", pattern = "*.csv", full.names = TRUE)[1]
+)
 
 fips <- ExtractNumData(data$FIPS)
 
-# create data frame for total population (denominator) and write to file
-population.total <- ExtractNumData(data$Total.Population)
-denomenator.df <- data.frame(fips, population.total)
-colnames(denomenator.df) <- c("FIPS Code", "Total Population 2011-2015")
-WriteDFToTable(denomenator.df, "population-denominator.csv")
+# Total Labour Force (LF) stats
+White.LF <- ExtractNumData(data$White.16.Years.Old.in.Civilian.Labor.Force.)
+BoAA.LF <- ExtractNumData(data$Black.or.African.American.16.Years.Old.in..Civilian.Labor.Force.)
+AIAN.LF <- ExtractNumData(data$American.Indian.and.Alaska.Native.16.Years.Old.in..Civilian.Labor.Force.)
+Asian.LF <- ExtractNumData(data$Asian.16.Years.Old.in.Civilian.Labor.Force.)
+NHawaiian.LF <- ExtractNumData(data$Native.Hawaiian.and.Other.Pacific.Islander.16..Years.Old.in.Civilian.Labor.Force.)
+SomeR.LF <- ExtractNumData(data$Some.Other.Race.16.Years.Old.in.Civilian.Labor.Force.)
+ToMR.LF <- ExtractNumData(data$Two.or.More.Races.16.Years.Old.in.Civilian.Labor.Force.)
+#=======
+total.LF <- White.LF + BoAA.LF + AIAN.LF + Asian.LF + NHawaiian.LF + SomeR.LF + ToMR.LF
+total.LF.df <- data.frame(fips, total.LF)
+colnames(total.LF.df) <- c("Id", "y_2011-2015")
+WriteDFToTable(total.LF.df, "total-labour-force.csv")
 
-# create dataframe for young population (<18 years of age) and write to file
-population.young <- ExtractNumData(data$Total.Population..Under.5.Years) +
-                    ExtractNumData(data$Total.Population..5.to.9.Years) +
-                    ExtractNumData(data$Total.Population..10.to.14.Years) +
-                    ExtractNumData(data$Total.Population..15.to.17.Years)
-population.young.df <- data.frame(fips, population.young)
-colnames(population.young.df) <- c("FIPS Code", "Population under 18 years old 2011-2015")
-WriteDFToTable(population.young.df, "population-young.csv")
+# Employment Stats
+White.Employed <- ExtractNumData(data$White.16.Years.Old.in.Civilian.Labor.Force..Employed)
+BoAA.Employed <- ExtractNumData(data$Black.or.African.American.16.Years.Old.in..Civilian.Labor.Force..Employed)
+AIAN.Employed <- ExtractNumData(data$American.Indian.and.Alaska.Native.16.Years.Old.in..Civilian.Labor.Force..Employed)
+Asian.Employed <- ExtractNumData(data$Asian.16.Years.Old.in.Civilian.Labor.Force..Employed)
+NHawaiian.Employed <- ExtractNumData(data$Native.Hawaiian.and.Other.Pacific.Islander.16..Years.Old.In.nbsp..Civilian.Labor.Force..Employed)
+SomeR.Employed <- ExtractNumData(data$Some.Other.Race.16.Years.Old.in.Civilian.Labor.Force..Employed)
+ToMR.Employed <- ExtractNumData(data$Two.or.More.Races.16.Years.Old.in.Civilian.Labor.Force..Employed)
+#=======
+total.Employed <- White.Employed + BoAA.Employed + AIAN.Employed + Asian.Employed + NHawaiian.Employed + SomeR.Employed + ToMR.Employed
+total.Employed.df <- data.frame(fips, total.Employed)
+colnames(total.Employed.df) <- c("Id", "y_2011-2015")
+WriteDFToTable(total.LF.df, "employed-labour-force.csv")
 
-# create dataframe for elderly population (>=65 years of age) and write to file
-population.elderly <- ExtractNumData(data$Total.Population..65.to.74.Years) +
-                      ExtractNumData(data$Total.Population..75.to.84.Years) +
-                      ExtractNumData(data$Total.Population..85.Years.and.Over)
-population.elderly.df <- data.frame(fips, population.elderly)
-colnames(population.elderly.df) <- c("FIPS Code", "Population above 65 years old 2011-2015")
-WriteDFToTable(population.elderly.df, "population-elderly.csv")
 
-# create dataframe for prime working population (>=25, <55 years of age) and write to file
-population.prime.working <- ExtractNumData(data$Total.Population..25.to.34.Years) +
-                            ExtractNumData(data$Total.Population..35.to.44.Years) +
-                            ExtractNumData(data$Total.Population..45.to.54.Years)
-population.working.df <- data.frame(fips, population.prime.working)
-colnames(population.working.df) <- c("FIPS Code", "Population between 25 to 54 years old 2011-2015")
-WriteDFToTable(population.working.df, "population-prime-working.csv")
-
-# create dataframe for median age and write to file
-population.median.age <- ExtractNumData(data$Median.Age.)
-population.median.df <- data.frame(fips, population.prime.working)
-colnames(population.median.df) <- c("FIPS Code", "Population median age 2011-2015")
-WriteDFToTable(population.median.df, "population-median.csv")
+# CSV to allow double checking work
+check.df <- data.frame(fips,
+                       White.LF, White.Employed,
+                       BoAA.LF, BoAA.Employed,
+                       AIAN.LF, AIAN.Employed,
+                       Asian.LF, Asian.Employed,
+                       NHawaiian.LF, NHawaiian.Employed,
+                       SomeR.LF, SomeR.Employed,
+                       ToMR.LF, ToMR.Employed
+                       )
+colnames(check.df) <- c("ID",
+                        "Total White Labour Force", "Total White Employed",
+                        "Total Black or African American Labour Force", "Total Black or African American Employed",
+                        "Total American Indian and Alaska Native Labour Force", "Total American Indian and Alaska Native Employed",
+                        "Total Asian Labour Force", "Total Asian Employed",
+                        "Total Native Hawaiian Labour Force", "Total Native Hawaiian Employed",
+                        "Total Some Race Labour Force", "Total Some Race Employed",
+                        "Total Two or More Race Labour Force", "Total Two or More Race Employed"
+                        )
+WriteDFToTable(check.df, "check-work.csv")
 
