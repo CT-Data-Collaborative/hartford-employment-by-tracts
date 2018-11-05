@@ -22,5 +22,5 @@ Produce a CSV table with the following columns:
 Note
 -----
   The census data includes the Labor Force Participation rate.\
-  The data/*.csv files include this raw field, and the estimation based on multiplying the total population estimate with the rates\
+  The data/\*.csv files include this raw field, and the estimation based on multiplying the total population estimate with the rates\
   
